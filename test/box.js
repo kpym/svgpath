@@ -12,8 +12,8 @@ describe('Box', function () {
     b = box();
 
     assert(b.isUndefined());
-    assert.equal(b.width, 0);
-    assert.equal(b.height, 0);
+    assert.equal(b.width(), 0);
+    assert.equal(b.height(), 0);
   });
 
   it('parse from string', function () {
@@ -21,10 +21,24 @@ describe('Box', function () {
 
     assert.equal(b.minX, -1);
     assert.equal(b.maxX, 3);
-    assert.equal(b.width, 4);
     assert.equal(b.minY, 2);
     assert.equal(b.maxY, 7);
-    assert.equal(b.height, 5);
+  });
+
+  it('copy', function () {
+    b = box('-1 2 4 5').copy();
+
+    assert.equal(b.minX, -1);
+    assert.equal(b.maxX, 3);
+    assert.equal(b.minY, 2);
+    assert.equal(b.maxY, 7);
+  });
+
+  it('width / height', function () {
+    b = box('-1 2 4 5');
+
+    assert.equal(b.width(), 4);
+    assert.equal(b.height(), 5);
   });
 
   it('add a point', function () {
@@ -32,37 +46,29 @@ describe('Box', function () {
 
     assert.equal(b.minX, 1);
     assert.equal(b.maxX, 1);
-    assert.equal(b.width, 0);
     assert.equal(b.minY, 1);
     assert.equal(b.maxY, 1);
-    assert.equal(b.height, 0);
 
     b.addX(2);
 
     assert.equal(b.minX, 1);
     assert.equal(b.maxX, 2);
-    assert.equal(b.width, 1);
     assert.equal(b.minY, 1);
     assert.equal(b.maxY, 1);
-    assert.equal(b.height, 0);
 
     b.addY(3);
 
     assert.equal(b.minX, 1);
     assert.equal(b.maxX, 2);
-    assert.equal(b.width, 1);
     assert.equal(b.minY, 1);
     assert.equal(b.maxY, 3);
-    assert.equal(b.height, 2);
 
     b.addPoint(4, -5);
 
     assert.equal(b.minX, 1);
     assert.equal(b.maxX, 4);
-    assert.equal(b.width, 3);
     assert.equal(b.minY, -5);
     assert.equal(b.maxY, 3);
-    assert.equal(b.height, 8);
   });
 
   it('add quadratic curve', function () {
@@ -70,13 +76,11 @@ describe('Box', function () {
 
     assert.equal(b.minX, 0);
     assert.equal(b.maxX, 1.8);
-    assert.equal(b.width, 1.8);
 
     b = box().addYQ([ 0, -2, 1 ]);
 
     assert.equal(b.minY, -0.8);
     assert.equal(b.maxY, 1);
-    assert.equal(b.height, 1.8);
   });
 
   it('add cubic curve', function () {
@@ -84,13 +88,11 @@ describe('Box', function () {
 
     assert.equal(Math.round(b.minX), -11);
     assert.equal(Math.round(b.maxX), 126);
-    assert.equal(Math.round(b.width), 137);
 
     b = box().addYC([ 0, 1, 2, 3 ]);
 
     assert.equal(b.minY, 0);
     assert.equal(b.maxY, 3);
-    assert.equal(b.height, 3);
   });
 
   it('view box', function () {
@@ -102,10 +104,8 @@ describe('Box', function () {
 
     assert.equal(b.minX, -10);
     assert.equal(b.maxX, 20);
-    assert.equal(b.width, 30);
     assert.equal(b.minY, 20);
     assert.equal(b.maxY, 70);
-    assert.equal(b.height, 50);
   });
 
   it('matrix to put in a box', function () {
