@@ -25,6 +25,11 @@ describe('AffineTransform', function () {
     assert.deepEqual(at.toArray(), [ 1, 2, 3, 4, 5, 7 ]);
   });
 
+  it('copy', function () {
+    at = affineTransform([ 1, 2, 3, 4, 5, 7 ]).copy();
+    assert.deepEqual(at.toArray(), [ 1, 2, 3, 4, 5, 7 ]);
+  });
+
   it('trivial transform', function () {
     at = affineTransform();
 
