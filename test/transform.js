@@ -210,7 +210,7 @@ describe('Transform', function () {
 
       assert.equal(
         p.translate(100, 100).toString(),
-        'm170 170l70 70'
+        'M170 170l70 70'
       );
     });
   });

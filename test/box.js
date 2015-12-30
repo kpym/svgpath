@@ -98,7 +98,7 @@ describe('Box', function () {
   it('view box', function () {
     b = box().addXC([ 0, -70, 210, 100 ]).addYC([ 0, -30, 70, 40 ]);
 
-    assert.equal(b.toViewBoxString(0), '-11 -6 137 51');
+    assert.equal(b.toString(0), '-11 -6 137 51');
 
     b = box('-10 20 30 50');
 
@@ -111,16 +111,16 @@ describe('Box', function () {
   it('matrix to put in a box', function () {
     b = box('-10 0 40 50');
 
-    m = b.matrixToBox('0 0 100 200'); // default is meet xMidYMid
+    m = b.inboxMatrix('0 0 100 200'); // default is meet xMidYMid
     assert.deepEqual(m, [ 2.5, 0, 0, 2.5, 25, 37.5 ]);
 
-    m = b.matrixToBox('0 0 100 200 slice xMinYMax');
+    m = b.inboxMatrix('0 0 100 200 slice xMinYMax');
     assert.deepEqual(m, [ 4, 0, 0, 4, 40, 0 ]);
 
-    m = b.matrixToBox('0 0 100 200 fit');
+    m = b.inboxMatrix('0 0 100 200 fit');
     assert.deepEqual(m, [ 2.5, 0, 0, 4, 25, 0 ]);
 
-    m = b.matrixToBox('0 0 100 200 move xMinYmid');
+    m = b.inboxMatrix('0 0 100 200 move xMinYmid');
     assert.deepEqual(m, [ 1, 0, 0, 1, 10, 75 ]);
   });
 
