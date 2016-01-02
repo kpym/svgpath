@@ -14,7 +14,7 @@ describe('Path parse', function () {
     var batch = fs.readFileSync(path.join(__dirname, '/fixtures/big.txt'), 'utf8').match(/[^\r\n]+/g);
 
     for (var i = 0, n = batch.length; i < n; i++) {
-      assert(!batch[i] || svgpath(batch[i]).err.length === 0, ""+i+":"+svgpath(batch[i]).err.join('\n'));
+      assert(!svgpath(batch[i]).hasErrors(), "batch["+i+"] "+svgpath(batch[i]).errors());
     }
   });
 
@@ -45,12 +45,12 @@ describe('Path parse', function () {
   });
 
   it('errors', function () {
-    assert(svgpath('0').err.length > 0, 'error case 1');
-    assert(svgpath('U').err.length > 0, 'error case 2');
-    assert(svgpath('z').err.length > 0, 'error case 3');
-    assert(svgpath('M+').err.length > 0, 'error case 4');
-    assert(svgpath('M00').err.length > 0, 'error case 5');
-    assert(svgpath('M0e').err.length > 0, 'error case 6');
-    assert(svgpath('M0-.e3').err.length > 0, 'error case 7');
+    assert(svgpath('0').hasErrors(), 'error case 1');
+    assert(svgpath('U').hasErrors(), 'error case 2');
+    assert(svgpath('z').hasErrors(), 'error case 3');
+    assert(svgpath('M+').hasErrors(), 'error case 4');
+    assert(svgpath('M00').hasErrors(), 'error case 5');
+    assert(svgpath('M0e').hasErrors(), 'error case 6');
+    assert(svgpath('M0-.e3').hasErrors(), 'error case 7');
   });
 });

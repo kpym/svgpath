@@ -2,7 +2,7 @@ SVGPath(y)
 =========
 
 This project started as fork of [svgpath](https://github.com/fontello/svgpath).
-They are very similar, but I rewrote a big part of the library to fit my needs. Why ? Because I need a less strict parser (if some error is present in the path I don't want the parser to stops.), more options to convert the path back to string and some functionality that the authors of [svgpath](https://github.com/fontello/svgpath) don't want (like `.box`). I also want to use this library in a browser (not only in node).
+They are very similar, but I rewrote a big part of the library to fit my needs. Why ? Because I need a less strict parser (if some error is present in the path I don't want the parser to stops.), more options to convert the path back to string and some functionality that the authors of [svgpath](https://github.com/fontello/svgpath) don't want (like `.inbox`). I also want to use this library in a browser (not only in node).
 
 > Low level toolkit for SVG paths transformations. Sometime you can't use
 `transform` attributes and have to apply changes to svg paths directly.
@@ -138,7 +138,7 @@ This command normalize the path using the following rules:
 
 These methods evaluate the affine transform (if any) at their begining. 
 
-### .toString(parameters [=''], normalize [=true]) -> string
+### .toString(parameters [=''], normalize [=true], errstop [=false]) -> string
 
 Returns final path string. The output is controlled by multiple parameters.
 
@@ -156,6 +156,7 @@ Returns final path string. The output is controlled by multiple parameters.
     + remove `L` commands after `M` : yes if `L` is present, no if `l` _(default)_ is present.
 - `parameters` (boolean) : `true` is equivalent to `'+'` (turn on all zip parameters), `false` is equivalent to `'-'` (turn off all zip parameters).
 - `normalize` (boolean) if _true_ the path is normalised with `.normalize()`.
+- `errstop` (boolean) if _true_ only the segments before the first error are returned.
 
 **examples** :
 
@@ -163,7 +164,9 @@ Returns final path string. The output is controlled by multiple parameters.
 - `.toString('0.X, -')` to obtain the _nice_ output with coma followed by space as coordinate separator. The precision is set to 1, and there will be at least one digit in the integer part.
 - `.toString('0.00XX,-RL')` another _nice_ output with removed repeats. The precision is set to 4, and the numbers will be with at least 3 digits (one before the dot and two after).
 
-### .toArray() -> Array 
+### .toArray(errstop [=false]) -> Array
+
+- `errstop` (boolean) if _true_ only the segments before the first error are returned.
 
 Apply the affine transform and concat all segments to one array like `['M', 0, 0, 'L', 1, 1]`. This array can be joined `.toArray().join(' ')` to produce a valid SVG string in faster way than `.toString()`.
 
@@ -198,13 +201,27 @@ Apply iterator to all path segments.
 - Iterator can return array of new segments to replace current one (`[]` means
   that current segment should be deleted).
 
+## Parse errors
+
+### .hasErrors() -> boolean 
+
+Return true if the path has parse errors.
+
+### .errors() -> string
+
+Return a string with one error per line. Every error line contain the position and the segment number where the error has been found. An example of error is :
+> `[pos:14, seg:4] Non expected character [R]. I'll ignore it.`
+
 ## Members of SVGPath class
 
 ### Main
 
 - `.segments` : an array of arrays that contains the path segments. Something like `[['M', 10, 0], ['L', 10, 0]]` for example.
 - `.affineTransform` : an object of class AffineTransform that represent the transform to apply to the path. At the beginning this transform is the identity. Every time we use one of the methods `.scale()`, `.translate()`, ... we modify this object. We actually apply this transform to the path with `.doTransform()` (and after that it is reset to identity). We can transform this object to an array with `.toArray()` method. 
-- `.err` : is an array of strings containing the parse errors of the initial path string.
+- `.errs` : is an array of strings containing the parse errors of the initial path string. Every error is an object with three fields: 
+    + `position` : the position in the path string where the error was found;
+    + `segment` : the segment number where the error is;
+    + `message` : the message of the error;
 
 ### Precision
 

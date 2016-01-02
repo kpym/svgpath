@@ -8,7 +8,24 @@ var svgpath = require('../');
 
 describe('API', function () {
 
+  describe('toArray', function () {
+    it('should return an array', function () {
+      assert.deepEqual(
+        svgpath('M 0 0 H 10').unshort().toArray(),
+        ["M", 0, 0, "H", 10]
+      );
+    });
+
+    it('should handle errors', function () {
+      assert.deepEqual(
+        svgpath('M10,10h10v10-e3 3').toArray(true),
+        ["M", 10, 10, "h", 10, "v", 10]
+      );
+    });
+  });
+
   describe('toString', function () {
+
     it('without zip', function () {
       assert.equal(
         svgpath('M1e3-1e-3.1.2-.3-.4 100 10Z').toString(false),
@@ -41,6 +58,13 @@ describe('API', function () {
       assert.equal(
         svgpath('M1 2 3 4 H1 V2ZH2').toString('bar'),
         'M 1 2 L 3 4 H 1 V 2 Z H 2'
+      );
+    });
+
+    it('should handle errors', function () {
+      assert.equal(
+        svgpath('M10,10h10v10-e3').toString('-',false,true),
+        "M 10 10 h 10 v 10"
       );
     });
   });
