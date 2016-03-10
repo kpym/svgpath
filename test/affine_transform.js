@@ -30,7 +30,15 @@ describe('AffineTransform', function () {
     assert.deepEqual(at.toArray(), [ 1, 2, 3, 4, 5, 7 ]);
   });
 
-  it('check trivial transform + preserve X / Y', function () {
+  it('determinant', function () {
+    at = affineTransform();
+
+    at = affineTransform([ 1, 2, 3, 4 ]);
+    assert.equal(at.det(),-2);
+  });
+
+
+  it('check trivial transform', function () {
     at = affineTransform();
 
     at = affineTransform([ 1, 2, 3, 4 ]);
@@ -38,7 +46,9 @@ describe('AffineTransform', function () {
 
     at = affineTransform([ 1, 2, 3, 4 ]).reset();
     assert(at.isIdentity());
+  });
 
+  it('chack preserve X / Y', function () {
     at = affineTransform([ 1, 2, 3, 4, 5, 7 ]);
     assert(!at.preserveH());
     assert(!at.preserveV());
