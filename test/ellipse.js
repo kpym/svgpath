@@ -9,10 +9,10 @@ var e, m;
 describe('ellipse', function () {
 
   it('is degenerate', function () {
-    e = ellipse(ellipse.prototype.epsilon, 1, 35);
+    e = ellipse(1e-7, 1, 35, 7);
     assert(e.isDegenerate());
 
-    e = ellipse(1, ellipse.prototype.epsilon, -49);
+    e = ellipse(1, 1e-7, -49, 7);
     assert(e.isDegenerate());
 
     e = ellipse(1, 2, 128);

@@ -618,6 +618,13 @@ describe('API', function () {
         ['M', 25, 25, 'A', 15, 15, 0, 0, 1, 50, 50]
       );
     });
+
+    it('almost zero eigen values', function () {
+      assert.deepEqual(
+        svgpath('M148.7 277.9A228.7 113.2 90 1 0 159.3 734.8').translate(10).round(1).toArray(),
+        ['M', 158.7, 277.9, 'A', 113.2, 228.7, 0, 1, 0, 169.3, 734.8]
+      );
+    });
   });
 
   describe('bounding box', function () {
