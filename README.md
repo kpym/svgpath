@@ -13,9 +13,20 @@ Note, this package works with `paths`, not with svg xml sources.
 Example
 -------
 
+## Load in Node
+
 ```js
 var SVGPath = require('svgpath');
+```
 
+## Load in browser
+
+```
+<script src="svgpathy.js" type="text/javascript" ></script>
+```
+
+## Use it
+```
 var transformed = SVGPath(__your_path__)
                     .scale(0.5)
                     .translate(100,200)
@@ -37,7 +48,7 @@ Almost all methods are chainable (return self).
 Constructor. Creates new `SVGPath` class instance with chainable methods.
 The `new` can be omitted.
 
-### .copy() -> self 
+### .copy() -> self
 
 Create a copy of the path.
 
@@ -51,7 +62,7 @@ Rescale path (the same as SVG `scale` transformation). `sy` = `sx` by default.
 
 ### .translate(x [, y]) -> self
 
-Rescale path (the same as SVG `translate` transformation). `y` = 0 by default.
+Translate path (the same as SVG `translate` transformation). `y` = 0 by default.
 
 
 ### .rotate(angle [, rx, ry]) -> self
@@ -65,7 +76,7 @@ Skew the X-coordinate according to a certain angle specified in degrees. The sam
 
 ### .skewY(a) -> self
 
-Skew the X-coordinate according to a certain angle specified in degrees. The same as SVG `skewY` transformation.
+Skew the Y-coordinate according to a certain angle specified in degrees. The same as SVG `skewY` transformation.
 
 ### .matrix([ m1, m2, m3, m4, m5, m6 ]) -> self
 
@@ -77,14 +88,14 @@ Apply 2x3 affine transform matrix to path. Params - array. The same as SVG
 Any SVG transform or their combination. For example `rotate(90) scale(2,3)`.
 The same format, as described in SVG standard for `transform` attribute.
 
-## .inbox(string) -> self 
+## .inbox(string) -> self
 ## .inbox(x, y, width, height [,string]) -> self
-    
+
 This command translate and scale the path to put it in a box. The way to put the path in the box is controlled by the same type of parameters as in [PreserveAspectRatio](http://www.w3.org/TR/SVG/coords.html#PreserveAspectRatioAttribute).
 
-**Example** `.inbox('10 -10 200 400 slice xMinYMid')` translate and scale the path by respecting its aspect ratio and by covering the rectangle with size 200x400 starting at (10,-10).
+**Example** `.inbox('10 -10 200 400 slice xMinYMid')` or `.inbox(10, -10, 200, 400, 'slice xMinYMid')` translate and scale the path by respecting its aspect ratio and by covering the rectangle with size 200x400 starting at (10,-10).
 
-The possible parameters are : 
+The possible parameters are :
 
 - `meet` (the default) : scale the path (aspect ratio is preserved) as much as possible to fit the entire path in the box.
 - `slice` : scale the path (aspect ratio is preserved) as less as possible to cover the box.
@@ -114,7 +125,7 @@ Replaces all arcs with bezier curves.
 
 Round all coordinates to given decimal precision. By default round to integer.
 Useful to reduce resulting output string size.
-When called not only the coordinates are rounded but the path `.precision` is set to the corresponding value. 
+When called not only the coordinates are rounded but the path `.precision` is set to the corresponding value.
 
 ### .normalise(flags) -> self
 
@@ -122,7 +133,7 @@ This command normalize the path using the following rules:
 
 - The path must starts with `M`. So the first `m` is converted to `M` : yes if `F` _(default)_ is present, no if `f` is present in flags string.
 - Repeated `M` and `m` are smashed to one : yes if `M` _(default)_ is present, no if `m` is present in flags string.
-- Repeated `Z` and `z` are smashed to one : yes if `Z` _(default)_ is present, no if `z` is present in flags string. 
+- Repeated `Z` and `z` are smashed to one : yes if `Z` _(default)_ is present, no if `z` is present in flags string.
 - Empty segments (like `l 0 0`) are removed or converted to line segment if followed by `S`, `s`, `T`, `t`,: yes if `E` _(default)_ is present, no if `e` is present in flags string.
 - Arcs:
     + Are converted to line segments if one of the radii is 0 (up to the precision) : yes if `L` _(default)_ is present, no if `l` is present in flags string.
@@ -130,19 +141,19 @@ This command normalize the path using the following rules:
         * If the radii are too small, they are scaled.
         * The radii are set to positive numbers.
         * The angles is set to be in `[0,90[`.
-    + Set the flags to `0` or `1` _(this is normally done already by the parser)_ : yes if `G` is present, no if `g` _(default)_ is present in flags string. 
+    + Set the flags to `0` or `1` _(this is normally done already by the parser)_ : yes if `G` is present, no if `g` _(default)_ is present in flags string.
 
 **Example:** `.normalize('leg')` will normalize the path without normalizing the arc segments.
 
 ## Output
 
-These methods evaluate the affine transform (if any) at their begining. 
+These methods evaluate the affine transform (if any) at their begining.
 
 ### .toString(parameters [=''], normalize [=true], errstop [=false]) -> string
 
 Returns final path string. The output is controlled by multiple parameters.
 
-- `parameters` (string) set the number format and the 'zip' level. 
+- `parameters` (string) set the number format and the 'zip' level.
     + number format : for example `00.0XXX` state that the numbers has to have at least to digits before the dot and one after, and that the precision is 4. For example 1.00004 will be printed as 1.0 and 1.00005 will be printed as 1.0001.
     + the coordinate separator : if `,` is present the coordinates will be separated by a comma. The spaces around the `,` (if any) meters.
     + All the following zip parameters are turned on or off by a '+/-' flag : `+` = turn zip on _(default)_, `-` turn the zip off.
@@ -203,7 +214,7 @@ Apply iterator to all path segments.
 
 ## Parse errors
 
-### .hasErrors() -> boolean 
+### .hasErrors() -> boolean
 
 Return true if the path has parse errors.
 
@@ -217,8 +228,8 @@ Return a string with one error per line. Every error line contain the position a
 ### Main
 
 - `.segments` : an array of arrays that contains the path segments. Something like `[['M', 10, 0], ['L', 10, 0]]` for example.
-- `.affineTransform` : an object of class AffineTransform that represent the transform to apply to the path. At the beginning this transform is the identity. Every time we use one of the methods `.scale()`, `.translate()`, ... we modify this object. We actually apply this transform to the path with `.doTransform()` (and after that it is reset to identity). We can transform this object to an array with `.toArray()` method. 
-- `.errs` : is an array of strings containing the parse errors of the initial path string. Every error is an object with three fields: 
+- `.affineTransform` : an object of class AffineTransform that represent the transform to apply to the path. At the beginning this transform is the identity. Every time we use one of the methods `.scale()`, `.translate()`, ... we modify this object. We actually apply this transform to the path with `.doTransform()` (and after that it is reset to identity). We can transform this object to an array with `.toArray()` method.
+- `.errs` : is an array of strings containing the parse errors of the initial path string. Every error is an object with three fields:
     + `position` : the position in the path string where the error was found;
     + `segment` : the segment number where the error is;
     + `message` : the message of the error;
@@ -256,4 +267,18 @@ This parameters control the default behaviour of `.normalize()`. They are overwr
 - `.normalize_arc_ellipse` (default _true_) : Scale up radii and set the angle in [0,90[
 - `.normalize_arc_flags` (default _false_) : Set arc flags to 0 or 1 (normally already done by the parser)
 
+Some notes
+---
+
+- The library is located in the `lib` folder.
+- The browser version `svgpathy.js` is generated using [browserify](http://browserify.org/) by the command :
+
+    ```
+    browserify browserify_svgpath.js -o svgpathy.js
+    ```
+- In a browser you can use a CDN version :
+
+    ```
+    <script src="https://cdn.rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js" type="text/javascript" ></script>
+    ```
 [MIT](https://github.com/fontello/svgpath/blob/master/LICENSE)
