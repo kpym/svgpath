@@ -1,0 +1,30 @@
+input::-webkit-input-placeholder {
+  color: #ddd !important;
+}
+
+input::-moz-placeholder {
+  color: #ddd !important;
+}
+
+input:-ms-input-placeholder {
+  color: #ddd !important;
+}
+
+input::placeholder {
+  color: #ddd !important;
+}
+
+.controls {
+  background-color: #eee;
+  padding: 1em;
+}
+
+div.input, div.output {
+  margin-bottom: 1em;
+  margin-top: 1em;
+}
+img.svg {
+  border: 1px solid #eee;
+  width:100%;
+  height:30vh;
+}

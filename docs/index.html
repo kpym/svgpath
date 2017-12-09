@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <title>SVGPathy playground</title>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+  <link rel="stylesheet" href="main.css">
+</head>
+<body>
+  <div class="container">
+    <h1><a href="https://github.com/kpym/SVGPathy">SVGPathy</a> playground</h1>
+    <div id="app">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-8">
+            <!-- INPUT -->
+            <div class="input row">
+              <div class="col-8">
+                <textarea v-model="input" style="width:100%;height:30vh;" placeholder=" Paste here your code" @change="autoSetType()"></textarea>
+              </div>
+              <div class="col-4">
+                <img :src="inputSVG" alt="The input SVG" class="svg">
+              </div>
+            </div>
+
+            <!-- OUTPUT -->
+            <div class="output row">
+              <div class="col-8">
+                <textarea v-model="output" style="width:100%;height:30vh;" placeholder="The result is ..."></textarea>
+              </div>
+              <div class="col-4">
+                <img :src="outputSVG" alt="The ouput SVG" class="svg">
+              </div>
+            </div>
+          </div>
+          <div class="col-4 controls">
+            <!-- CONTROLS -->
+            <form class="container">
+              <div class="form-group row">
+                <label for="inputtype" class="col-form-label col-4">Input type</label>
+                <div class="col-8">
+                  <select v-model="inputtype" class="form-control">
+                    <option value="single">Single path</option>
+                    <option value="multiple">One path per line</option>
+                    <option value="svg">Full SVG source</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-check-label">
+                  <input ng-model="unarc" type="checkbox" class="form-check-input"> Remove Arcs
+                </label>
+              </div>
+
+              <div class="form-group row">
+                <label for="transformId" class="col-form-label col-4">Transformation</label>
+                <div class="col-8">
+                  <input v-model="transformation" type="text" class="form-control" placeholder="translate(10,5) rotate(30)">
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="transformId" class="col-form-label col-4">View Box</label>
+                <div class="col-8">
+                  <input v-model="bbx" type="text" class="form-control" id="transformId" placeholder="10 20 200 300 meet xMinYMid">
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="absrel" class="col-form-label col-4">Coordinates</label>
+                <div class="col-8">
+                  <select v-model="absrel" ng-init="absrel='abs'" id="absrel" class="form-control">
+                    <option value="abs">Absolutes</option>
+                    <option value="rel">Rrelatifs</option>
+                    <option value="vbx">Bounding Box</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="precisionId" class="col-form-label col-4">Precision</label>
+                <div class="col-8">
+                  <input v-model="precision" type="number" min="0" max="10" ng-init="precision=2" class="form-control" id="precisionId">
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-check-label">
+                  <input v-model="zipit" type="checkbox" class="form-check-input"> Zip it
+                </label>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Scripts -->
+  <script src="https://cdn.rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js"></script>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="main.js"></script>
+</body>
+</html>
