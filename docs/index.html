@@ -19,10 +19,10 @@
             <!-- INPUT -->
             <div class="input row">
               <div class="col-8">
-                <textarea v-model="input" style="width:100%;height:30vh;" placeholder=" Paste here your code" @change="autoSetType()"></textarea>
+                <textarea v-model="input" style="width:100%;height:30vh;" placeholder=" Paste here your code"></textarea>
               </div>
               <div class="col-4">
-                <img :src="inputSVG" alt="The input SVG" class="svg">
+                <img :src="inputSVG" alt="The input SVG" class="svg" v-cloak>
               </div>
             </div>
 
@@ -32,65 +32,72 @@
                 <textarea v-model="output" style="width:100%;height:30vh;" placeholder="The result is ..."></textarea>
               </div>
               <div class="col-4">
-                <img :src="outputSVG" alt="The ouput SVG" class="svg">
+                <img :src="outputSVG" alt="The ouput SVG" class="svg" v-cloak>
               </div>
             </div>
           </div>
           <div class="col-4 controls">
             <!-- CONTROLS -->
-            <form class="container">
-              <div class="form-group row">
-                <label for="inputtype" class="col-form-label col-4">Input type</label>
-                <div class="col-8">
-                  <select v-model="inputtype" class="form-control">
-                    <option value="single">Single path</option>
-                    <option value="multiple">One path per line</option>
-                    <option value="svg">Full SVG source</option>
-                  </select>
-                </div>
-              </div>
-
               <div class="form-group">
-                <label class="form-check-label">
-                  <input ng-model="unarc" type="checkbox" class="form-check-input"> Remove Arcs
+                <label for="unarcid" class="form-check-label">
+                  <input v-model="unarc" type="checkbox" class="form-check-input" id="unarcid"> Remove Arcs
+                </label>
+                &nbsp;
+                <label for="unshortid" class="form-check-label">
+                  <input v-model="unshort" type="checkbox" class="form-check-input" id="unshortid"> Unshort path
                 </label>
               </div>
 
               <div class="form-group row">
-                <label for="transformId" class="col-form-label col-4">Transformation</label>
+                <label for="transformid" class="col-form-label col-4">Transformation</label>
                 <div class="col-8">
-                  <input v-model="transformation" type="text" class="form-control" placeholder="translate(10,5) rotate(30)">
+                  <input v-model="transformation" type="text" class="form-control" placeholder="translate(10,5) rotate(30)" id="transformid">
                 </div>
               </div>
 
               <div class="form-group row">
-                <label for="transformId" class="col-form-label col-4">View Box</label>
+                <label for="bbxid" class="col-form-label col-4">View Box</label>
                 <div class="col-8">
-                  <input v-model="bbx" type="text" class="form-control" id="transformId" placeholder="10 20 200 300 meet xMinYMid">
+                  <input v-model="bbx" type="text" class="form-control" placeholder="10 20 200 300 meet xMinYMid" id="bbxid">
                 </div>
               </div>
 
+              <hr>
+
               <div class="form-group row">
-                <label for="absrel" class="col-form-label col-4">Coordinates</label>
+                <label for="outputtypeid" class="col-form-label col-4">Output type</label>
                 <div class="col-8">
-                  <select v-model="absrel" ng-init="absrel='abs'" id="absrel" class="form-control">
-                    <option value="abs">Absolutes</option>
-                    <option value="rel">Rrelatifs</option>
-                    <option value="vbx">Bounding Box</option>
+                  <select v-model="outputtype" class="form-control" id="outputtypeid">
+                    <option value="single">Single path</option>
+                    <option value="multiple">One path per line</option>
+                    <option value="svg">Full SVG source</option>
+                    <option value="pbbx">Path Bounding Boxes</option>
+                    <option value="gbbx">Global Bounding Box</option>
                   </select>
                 </div>
               </div>
 
               <div class="form-group row">
-                <label for="precisionId" class="col-form-label col-4">Precision</label>
+                <label for="absrelid" class="col-form-label col-4">Coordinates</label>
                 <div class="col-8">
-                  <input v-model="precision" type="number" min="0" max="10" ng-init="precision=2" class="form-control" id="precisionId">
+                  <select v-model="absrel" class="form-control" id="absrelid" >
+                    <option value="abs">Absolutes</option>
+                    <option value="rel">Rrelatifs</option>
+                    <option value="org">Original</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <label for="precisionid" class="col-form-label col-4">Precision</label>
+                <div class="col-8">
+                  <input v-model="precision" type="number" min="0" max="10" class="form-control" id="precisionid">
                 </div>
               </div>
 
               <div class="form-group">
-                <label class="form-check-label">
-                  <input v-model="zipit" type="checkbox" class="form-check-input"> Zip it
+                <label for="zipitid" class="form-check-label">
+                  <input v-model="zipit" type="checkbox" class="form-check-input" id="zipitid"> Zip it
                 </label>
               </div>
             </form>

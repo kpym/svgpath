@@ -1,3 +1,6 @@
+[v-cloak] {
+  display: none;
+}
 input::-webkit-input-placeholder {
   color: #ddd !important;
 }

@@ -2,83 +2,90 @@ var app = new Vue({
   el: '#app',
   data: {
     input: '',
-    inputtype: 'single',
-    unarc: true,
+    unarc: false,
+    unshort: false,
     absrel: 'abs',
     transformation: '',
     bbx: '',
+    outputtype: 'single',
     precision: '2',
     zipit: false,
   },
   computed: {
+    // contains the input data like this
+    // [ {data:'<svg...>',issegment:false},...,{data:'M 0 1 ...',issegment:true},...]
     inputArr: function() {
       var ia = [];
-      switch(this.inputtype) {
-        case "single" :
-          return [{data:this.input.trim(), issegment:true}];
-        case "multiple" :
-          return this.input.split(/[\r\n]+/).map(function(p){return {data:p.trim(), issegment:true}});
-        case "svg" :
-          return this.input.split(/( d="[^"]*")/gi).map(function(p){
-              var seg = (p.search(/\s+d\s*=\s*\"\s*/i) >= 0) ;
-              if (seg)
-                return {data:p.replace(/^\s+d\s*=\s*\"\s*/i,"").replace(/\s*\"\s*$/i,""), issegment:true};
-              else
-                return {data:p, issegment:false};
-            });
+      if (/svg/i.test(this.input)) {
+        return this.input.split(/(\s+d\s*=\s*"[^"]*")/gi).map(function(p){
+            var seg = (p.search(/\s+d\s*=\s*"/i) >= 0) ;
+            if (seg) {
+              return {data:p.replace(/^\s+d\s*=\s*"\s*/i,"").replace(/\s*\"\s*$/i,""), issegment:true};
+            }
+            else {
+              return {data:p, issegment:false};
+            }
+          });
+      }
+      else {
+        return this.input.split(/[\r\n]+/).map(function(p){return {data:p.trim(), issegment:true}});
       }
     },
+    // the input svg as url to display
     inputSVG: function () {
-      return this.str2svg(this.input);
+      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.inputArr));
     },
+    // reurn the matrix transform to put all the paths in the bounding box (bbx)
     bbxTransform: function() {
-      var strMatrix;
       if (this.bbx){
-        var totalpath = SVGPath(this.inputArr.reduce(function(p,s){return s.issegment ? (p + SVGPath(s.data).abs().toString()) : p},""));
-        var matrix = totalpath.toBox().inboxMatrix(this.bbx);
-        strMatrix = "matrix(" + matrix.join(" ") + ")";
+        var totalpath = this.arr2str(this.inputArr,"","abs");
+        var matrix = SVGPath(totalpath).toBox().inboxMatrix(this.bbx);
+        return "matrix(" + matrix.join(" ") + ")";
       }
-      else
-        strMatrix = "";
-      return strMatrix;
+      // else
+      return "";
     },
-    output: function () {
+    // same as inputArr but all paths are transformed
+    outputArr: function () {
       var app = this;
       return this.inputArr
         .map(function(s){
-            var strSegment = s.data;
-            if (s.issegment){
-              strSegment = app.transformSegment(strSegment, app.transformation + app.bbxTransform);
-              if (app.inputtype == "svg") {
-                strSegment = " d=\""+strSegment+"\"";
-              }
+            return {
+              data: s.issegment ? app.transformSegment(s.data, app.transformation + app.bbxTransform) : s.data,
+              issegment:s.issegment
             }
-            return strSegment;
-          })
-        .join(app.inputtype == "multiple" ? "\n" : "");
+          });
     },
+    // the result to output in the <textarea>
+    output: function () {
+      switch (this.outputtype) {
+        case "single":
+          return this.arr2str(this.outputArr,"");
+        case "multiple":
+          return this.arr2str(this.outputArr,"\n");
+        case "svg":
+          return this.arr2svg(this.outputArr);
+        case "pbbx":
+          return this.arr2str(this.outputArr,"\n","bbx");
+        case "gbbx":
+          return SVGPath(this.arr2str(this.outputArr,"","abs")).toBox().toString(this.precision);
+      }
+    },
+    // the output svg as url to display
     outputSVG: function () {
-      return this.str2svg(this.output);
+      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.outputArr));
     },
   },
   methods: {
-    autoSetType: function() {
-      if (typeof this.input !== "string") {
-        return;
-      }
-      if (/svg/i.test(this.input)) {
-        this.inputtype = "svg";
-      } else if (/[\n\r]+/i.test(this.input)) {
-        this.inputtype = "multiple";
-      } else {
-        this.inputtype = "single";
-      }
-    }, // end autoSetType
-    transformSegment: function(seg, trans) {
+    // transform the segment based on the globals (unarc, unshort, absrel) and the trans string parameter
+    transformSegment: function(seg,trans) {
       var p = SVGPath(seg);
 
       if (this.unarc) {
         p.unarc();
+      }
+      if (this.unshort) {
+        p.unshort();
       }
 
       switch (this.absrel) {
@@ -92,25 +99,46 @@ var app = new Vue({
 
       p.transform(trans);
 
-      if (this.absrel == "vbx" ) {
-        return p.round(this.precision).toBox().toString();
-      }
-      else {
-        return p.round(this.precision).toString(!!this.zipit);
-      }
+      return p.round(this.precision).toString(!!this.zipit);
     }, // end transformSegment
-    str2svg: function(s) {
-      s = s.trim() || "M0,0";
-      switch(this.inputtype){
-        case "multiple":
-          s = s.split(/[\r\n]+/).map(function(s){s = s.trim(); return s[0].toUpperCase() + s.substr(1);}).join(" ");
-        case "single":
-          return "data:image/svg+xml,<svg xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\""+SVGPath(s).toBox().toString()+"\"><path d=\""+s+"\" fill-opacity=\"0.35\"/></svg>";
-        case "svg":
-          return "data:image/svg+xml,"+s;
+    // arr2str = transform inputArr or outputArr to string
+    // a = [inputArr|outputArr]
+    // joinstr = the string used to join() maped array
+    // hook = [abs|bbx|d=|<path>], says how to transforme all segments befor to join them
+    // keppall = [true|false], if false we keep only the real (transformed) segments
+    arr2str: function(a,joinstr,hook,keepall) {
+      var h; // the hook function
+      switch(hook) {
+        case "abs":
+          h = function(s){return SVGPath(s).abs().toString()};
+          break;
+        case "bbx":
+          h = function(s){return SVGPath(s).toBox().toString(app.precision)};
+          break;
+        case "d=":
+          h = function(s){return " d=\""+s+"\""};
+          break;
+        case "<path>":
+          h = function(s){return "\t<path d=\""+s+"\"/>"};
+          break;
         default:
-          return "";
+          h = function(s){return s};
       }
-    }, // end str2svg
+      return a.map(function(s){return s.issegment ? h(s.data) : (keepall ? s.data : "")}).filter(Boolean).join(joinstr);
+    },
+    // transform inputArr or outputArr to svg file by autodetecting the type (lines of segments or full svg),
+    // in the case of list of segments the viewBox is auto calculated
+    arr2svg: function(a) {
+      if (!a || a.length == 0)
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>";
+
+      if (a[0].issegment) {
+        var bbx = SVGPath(this.arr2str(a,"","abs")).round(this.precision).toBox().toString();
+        var paths = this.arr2str(a,"\n","<path>")
+        return "<svg xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\""+bbx+"\">\n"+paths+"\n</svg>";
+      } else {
+        return this.arr2str(a,"","d=",true);
+      }
+    },// end arr2svg
   }
 });
