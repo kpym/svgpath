@@ -4,12 +4,14 @@ var app = new Vue({
     input: '',
     unarc: false,
     unshort: false,
+    reverse: false,
     absrel: 'abs',
     transformation: '',
     bbx: '',
     outputtype: 'single',
     precision: '2',
     zipit: false,
+    style:"stroke:red;fill-opacity:.5",
   },
   computed: {
     // contains the input data like this
@@ -75,6 +77,10 @@ var app = new Vue({
     outputSVG: function () {
       return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.outputArr));
     },
+    // the style attrinute for paths computed
+    styleAttr : function () {
+      return this.style ? "style=\""+this.style+"\"" : "";
+    },
   },
   methods: {
     // transform the segment based on the globals (unarc, unshort, absrel) and the trans string parameter
@@ -84,7 +90,10 @@ var app = new Vue({
       if (this.unarc) {
         p.unarc();
       }
-      if (this.unshort) {
+      if (this.reverse) {
+        p.reverse();
+      }
+      else if (this.unshort) {
         p.unshort();
       }
 
@@ -113,13 +122,13 @@ var app = new Vue({
           h = function(s){return SVGPath(s).abs().toString()};
           break;
         case "bbx":
-          h = function(s){return SVGPath(s).toBox().toString(app.precision)};
+          h = function(s){return SVGPath(s).toBox().toString(this.precision)};
           break;
         case "d=":
           h = function(s){return " d=\""+s+"\""};
           break;
         case "<path>":
-          h = function(s){return "\t<path d=\""+s+"\"/>"};
+          h = (function(s){return "\t<path d=\""+s+"\" "+this.styleAttr+"/>"}).bind(this);
           break;
         default:
           h = function(s){return s};

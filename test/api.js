@@ -8,10 +8,19 @@ var svgpath = require('../');
 
 describe('API', function () {
 
+  describe('copy', function () {
+    it('should make a copy', function () {
+      assert.deepEqual(
+        svgpath('M 0 0 H 10'),
+        svgpath('M 0 0 H 10').copy()
+      );
+    });
+  });
+
   describe('toArray', function () {
     it('should return an array', function () {
       assert.deepEqual(
-        svgpath('M 0 0 H 10').unshort().toArray(),
+        svgpath('M 0 0 H 10').toArray(),
         ["M", 0, 0, "H", 10]
       );
     });
@@ -545,6 +554,29 @@ describe('API', function () {
       assert.deepEqual(
         svgpath('M100 100A0 100 0 0 1 110 110').unarc().round(0).toArray(),
         ['M', 100, 100]
+      );
+    });
+  });
+
+  describe('reverse', function () {
+    it('consider Z like L(line) + Z(close) ', function () {
+      assert.deepEqual(
+        svgpath('M 1 2 Z').reverse().toArray(),
+        ["M", 1, 2, "L", 1, 2, "Z"]
+      );
+    });
+
+    it('work with absolute coordinates', function () {
+      assert.deepEqual(
+        svgpath('M10 -20 Q-30 40 50 -70 T-80 90 Z M 0 0 C 100 -110 -120 130 140 -150 S -170 180 190 200 H210Z V210 A 220 230 240 0 0 -250 -260 L270 -280').reverse().toArray(),
+        ["M", 270, -280, "L", -250, -260, "A", 220, 230, 240, 0, 1, 0, 210, "V", 0, "m", 0, 0, "L", 210, 200, "H", 190, "C", -170, 180, 400, -430, 140, -150, "C", -120, 130, 100, -110, 0, 0, "Z", "M", 10, -20, "L", -80, 90, "Q", 130, -180, 50, -70, "Q", -30, 40, 10, -20, "Z"]
+      );
+    });
+
+    it('work with relative coordinates', function () {
+      assert.deepEqual(
+        svgpath('m10 -20 q-30 40 50 -70 t-80 90 z m 0 0 c 100 -110 -120 130 140 -150 s -170 180 190 200 h210z v210 a 220 230 240 0 0 -250 -260 l270 -280').reverse().toArray(),
+        ["M", 30, -350, "l", -270, 280, "a", 220, 230, 240, 0, 1, 250, 260, "v", -210, "m", 0, 0, "l", 540, 50, "h", -210, "c", -360, -20, 70, -480, -190, -200, "c", -260, 280, -40, 40, -140, 150, "z", "m", 0, 0, "l", -30, 20, "q", 160, -200, 80, -90, "q", -80, 110, -50, 70, "Z"]
       );
     });
   });

@@ -121,6 +121,10 @@ generic curves (`Q`/`q`/`C`/`c`).
 
 Replaces all arcs with bezier curves.
 
+### .reverse() -> self
+
+Reverse the path. Before to do this it execute `.unshort()` because it is not clear what is the reverse of `T`/`t`/`S`/`s`.
+
 ### .round(precision) -> self
 
 Round all coordinates to given decimal precision. By default round to integer.
@@ -147,7 +151,7 @@ This command normalize the path using the following rules:
 
 ## Output
 
-These methods evaluate the affine transform (if any) at their begining.
+These methods evaluate the affine transform (if any) at their beginning.
 
 ### .toString(parameters [=''], normalize [=true], errstop [=false]) -> string
 
@@ -179,7 +183,7 @@ Returns final path string. The output is controlled by multiple parameters.
 
 - `errstop` (boolean) if _true_ only the segments before the first error are returned.
 
-Apply the affine transform and concat all segments to one array like `['M', 0, 0, 'L', 1, 1]`. This array can be joined `.toArray().join(' ')` to produce a valid SVG string in faster way than `.toString()`.
+Apply the affine transform and concatenate all segments to one array like `['M', 0, 0, 'L', 1, 1]`. This array can be joined `.toArray().join(' ')` to produce a valid SVG string in faster way than `.toString()`.
 
 
 ### .toBox() -> Box
@@ -206,7 +210,7 @@ Apply the affine transforms. This method is called by default by the output meth
 
 Apply iterator to all path segments.
 
-- Each iterator receives `segment`, `index`, `x` and `y` params.
+- Each iterator receives `segment`, `index`, `x` and `y` parameters.
   Where (x, y) are the absolute coordinates of segment start point. The `this` inside the iterator is the SVGPath object.
 - Iterator can modify current segment directly (return nothing in this case).
 - Iterator can return array of new segments to replace current one (`[]` means

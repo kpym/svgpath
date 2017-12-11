@@ -44,7 +44,11 @@
                 </label>
                 &nbsp;
                 <label for="unshortid" class="form-check-label">
-                  <input v-model="unshort" type="checkbox" class="form-check-input" id="unshortid"> Unshort path
+                  <input v-model="unshort" type="checkbox" class="form-check-input" id="unshortid"> Unshort
+                </label>
+                &nbsp;
+                <label for="reverseid" class="form-check-label">
+                  <input v-model="reverse" type="checkbox" class="form-check-input" id="reverseid"> Reverse
                 </label>
               </div>
 
@@ -100,6 +104,16 @@
                   <input v-model="zipit" type="checkbox" class="form-check-input" id="zipitid"> Zip it
                 </label>
               </div>
+
+              <hr>
+
+              <div class="form-group row">
+                <label for="styleid" class="col-form-label col-4">View Box</label>
+                <div class="col-8">
+                  <input v-model="style" type="text" class="form-control" placeholder="stroke-width:10;fill-opacity:.5" id="styleid">
+                </div>
+              </div>
+
             </form>
           </div>
         </div>
@@ -107,7 +121,7 @@
     </div>
   </div>
   <!-- Scripts -->
-  <script src="https://cdn.rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js"></script>
+  <script src="https://rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js"></script>
   <script src="https://unpkg.com/vue"></script>
   <script src="main.js"></script>
 </body>
