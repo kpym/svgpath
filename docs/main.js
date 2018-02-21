@@ -65,6 +65,8 @@ var app = new Vue({
           return this.arr2str(this.outputArr,"");
         case "multiple":
           return this.arr2str(this.outputArr,"\n");
+        case "tikz-multiple":
+          return this.arr2str(this.outputArr,"\n","fill");
         case "svg":
           return this.arr2svg(this.outputArr);
         case "pbbx":
@@ -108,7 +110,10 @@ var app = new Vue({
 
       p.transform(trans);
 
-      return p.round(this.precision).toString(!!this.zipit);
+      var ziplevel = !this.zipit ? "-" : (this.outputtype=="tikz-multiple") ? "+d": "+";
+      console.log("ziplevel: " + ziplevel);
+
+      return p.round(this.precision).toString(ziplevel);
     }, // end transformSegment
     // arr2str = transform inputArr or outputArr to string
     // a = [inputArr|outputArr]
@@ -126,6 +131,9 @@ var app = new Vue({
           break;
         case "d=":
           h = function(s){return " d=\""+s+"\""};
+          break;
+        case "fill":
+          h = function(s){return "\\fill svg{"+s+"};"};
           break;
         case "<path>":
           h = (function(s){return "\t<path d=\""+s+"\" "+this.styleAttr+"/>"}).bind(this);
