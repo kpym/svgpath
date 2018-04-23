@@ -12,6 +12,7 @@ var app = new Vue({
     precision: '2',
     zipit: false,
     style:"stroke:red;fill-opacity:.5",
+    isCopyed: false,
   },
   computed: {
     // contains the input data like this
@@ -61,6 +62,7 @@ var app = new Vue({
     },
     // the result to output in the <textarea>
     output: function () {
+      this.isCopyed = false;
       switch (this.outputtype) {
         case "single":
           return this.arr2str(this.outputArr,"");
@@ -83,6 +85,9 @@ var app = new Vue({
     // the style attrinute for paths computed
     styleAttr : function () {
       return this.style ? "style=\""+this.style+"\"" : "";
+    },
+    copyButton : function (){
+      return this.isCopyed ? "btn-secondary" : "btn-primary";
     },
   },
   methods: {
@@ -170,3 +175,12 @@ var app = new Vue({
     }
   }
 });
+
+var CopyBtn = new Clipboard('#copy-btn', {
+  text: function(trigger) {
+    app.isCopyed = true;
+    return app.output;
+  }
+});
+
+

@@ -34,6 +34,9 @@
               <div class="col-4">
                 <img :src="outputSVG" alt="The ouput SVG" class="svg" v-cloak>
               </div>
+              <div class="col-8">
+                <button type="button" id="copy-btn" class="btn" :class="copyButton">Copy code</button>
+              </div>
             </div>
           </div>
           <div class="col-4 controls">
@@ -124,6 +127,7 @@
   <!-- Scripts -->
   <script src="https://rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js"></script>
   <script src="https://unpkg.com/vue"></script>
+  <script src="https://cdn.rawgit.com/zenorocha/clipboard.js/v1.5.5/dist/clipboard.min.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
