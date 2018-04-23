@@ -52,8 +52,9 @@ var app = new Vue({
       var app = this;
       return this.inputArr
         .map(function(s){
+            var transform = s.issegment ? app.transformSegment : app.transformViewBox;
             return {
-              data: s.issegment ? app.transformSegment(s.data, app.transformation + app.bbxTransform) : s.data,
+              data: transform(s.data, app.transformation + app.bbxTransform),
               issegment:s.issegment
             }
           });
@@ -157,5 +158,15 @@ var app = new Vue({
         return this.arr2str(a,"","d=",true);
       }
     },// end arr2svg
+    transformViewBox: function(svgseg, trans) {
+      var vbattr = svgseg.match(/viewbox\s*=\s*"[^"]*"/ig);
+      if ( vbattr ){
+        var vbarr = vbattr[0].match(/[\d.+-]+/g);
+        var vbpath = "M" + vbarr[0] + " " + vbarr[1] + "l" + vbarr[2] + " " + vbarr[3];
+        var bbx = SVGPath(vbpath).transform(trans).toBox().toString();
+        svgseg = svgseg.replace(vbattr,"viewBox=\""+bbx+"\"");
+      }
+      return svgseg;
+    }
   }
 });
