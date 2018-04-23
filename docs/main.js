@@ -72,6 +72,11 @@ var app = new Vue({
           return this.arr2str(this.outputArr,"\n","fill");
         case "svg":
           return this.arr2svg(this.outputArr);
+        case "tikz-standalone":
+          return ""
+            +"\\documentclass[tikz,border=7pt]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}\n\t\t"
+            +this.arr2str(this.outputArr,"\n","fill")
+            +"\n\t\\end{tikzpicture}\n\\end{document}";
         case "pbbx":
           return this.arr2str(this.outputArr,"\n","bbx");
         case "gbbx":
@@ -116,7 +121,7 @@ var app = new Vue({
 
       p.transform(trans);
 
-      var ziplevel = !this.zipit ? "-" : (this.outputtype=="tikz-multiple") ? "+d": "+";
+      var ziplevel = !this.zipit ? "-" : (this.outputtype.startsWith("tikz") ? "+d": "+");
       console.log("ziplevel: " + ziplevel);
 
       return p.round(this.precision).toString(ziplevel);

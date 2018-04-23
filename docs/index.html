@@ -35,7 +35,7 @@
                 <img :src="outputSVG" alt="The ouput SVG" class="svg" v-cloak>
               </div>
               <div class="col-8">
-                <button type="button" id="copy-btn" class="btn" :class="copyButton">Copy code</button>
+                <button type="button" id="copy-btn" class="btn" :class="copyButton" v-cloak>Copy code</button>
               </div>
             </div>
           </div>
@@ -79,6 +79,7 @@
                     <option value="multiple">One path per line</option>
                     <option value="tikz-multiple">One TikZ path per line</option>
                     <option value="svg">Full SVG source</option>
+                    <option value="tikz-standalone">Full TikZ in standalone</option>
                     <option value="pbbx">Path Bounding Boxes</option>
                     <option value="gbbx">Global Bounding Box</option>
                   </select>
