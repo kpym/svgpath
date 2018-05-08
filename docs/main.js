@@ -75,7 +75,7 @@ var app = new Vue({
         case "tikz-standalone":
           return ""
             +"\\documentclass[tikz,border=7pt]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}\n\t\t"
-            +this.arr2str(this.outputArr,"\n","fill")
+            +this.arr2str(this.outputArr,"\n\t\t","fill")
             +"\n\t\\end{tikzpicture}\n\\end{document}";
         case "pbbx":
           return this.arr2str(this.outputArr,"\n","bbx");
