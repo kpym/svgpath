@@ -290,6 +290,6 @@ Some notes
 
 - Add parameters to `unshort` that allow to replace `H|h|V|v` by `L|l`, and `Z|z` by `L+Z+M|l+z+m`.
 - Add `short` method that replace when possible `C|c` by `S|s`, `Q|q` by `T|T`,  `L|l` by `H|h|V|v`, `L+Z+M|l+z+m` by `Z|z` (multiple `M|m` to single one is already implemented in `normalise`).
-- In transform method add the possibility to have `indox` inthe string parameter.
+- In transform method add the possibility to have `indox` in the string parameter.
 - Add advanced mode in the [Playground](https://kpym.github.io/SVGPathy/) where we can enter a string like ".normalise().rotate(30).toString()" to execute over each path.
 [MIT](https://github.com/fontello/svgpath/blob/master/LICENSE)
