@@ -36,13 +36,13 @@ var app = new Vue({
     },
     // the input svg as url to display
     inputSVG: function () {
-      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.inputArr));
+      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.inputArr, false));
     },
     // reurn the matrix transform to put all the paths in the bounding box (bbx)
     bbxTransform: function() {
       if (this.bbx){
         var totalpath = this.arr2str(this.inputArr,"","abs");
-        var matrix = SVGPath(totalpath).toBox().inboxMatrix(this.bbx);
+        var matrix = SVGPath(app.transformSegment(totalpath,app.transformation)).toBox().inboxMatrix(this.bbx);
         return "matrix(" + matrix.join(" ") + ")";
       }
       // else
@@ -55,7 +55,7 @@ var app = new Vue({
         .map(function(s){
             var transform = s.issegment ? app.transformSegment : app.transformViewBox;
             return {
-              data: transform(s.data, app.transformation + app.bbxTransform),
+              data: transform(s.data, app.bbxTransform + app.transformation),
               issegment:s.issegment
             }
           });
@@ -71,14 +71,9 @@ var app = new Vue({
         case "tikz-multiple":
           return this.arr2str(this.outputArr,"\n","fill");
         case "svg":
-          return this.arr2svg(this.outputArr);
+          return this.arr2svg(this.outputArr, true);
         case "tikz-standalone":
-          bbxobj = SVGPath(this.arr2str(this.outputArr,"","abs")).toBox();
-          return ""
-            +"\\documentclass[tikz]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}[x=1pt,y=1pt,yscale=-1]\n\t\t"
-            +`\\clip (${bbxobj.minX},${bbxobj.minY}) rectangle (${bbxobj.maxX},${bbxobj.maxY});\n\t\t`
-            +this.arr2str(this.outputArr,"\n\t\t","fill")
-            +"\n\t\\end{tikzpicture}\n\\end{document}";
+          return this.arr2tikz(this.outputArr);
         case "pbbx":
           return this.arr2str(this.outputArr,"\n","bbx");
         case "gbbx":
@@ -87,7 +82,7 @@ var app = new Vue({
     },
     // the output svg as url to display
     outputSVG: function () {
-      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.outputArr));
+      return "data:image/svg+xml,"+encodeURIComponent(this.arr2svg(this.outputArr, true));
     },
     // the style attrinute for paths computed
     styleAttr : function () {
@@ -158,24 +153,54 @@ var app = new Vue({
     },
     // transform inputArr or outputArr to svg file by autodetecting the type (lines of segments or full svg),
     // in the case of list of segments the viewBox is auto calculated
-    arr2svg: function(a) {
+    // the view box is set to requested one if output is true, else the real one is used
+    arr2svg: function(a,output) {
+      var bbx, paths;
       if (!a || a.length == 0)
         return "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>";
 
       if (a[0].issegment) {
-        var bbx = SVGPath(this.arr2str(a,"","abs")).round(this.precision).toBox().toString();
-        var paths = this.arr2str(a,"\n","<path>")
+        var bbxobj = SVGPath(this.arr2str(a,"","abs")).round(this.precision).toBox();
+        if (this.bbx && output) {
+          paths = `<rect x="${bbxobj.minX}" y="${bbxobj.minY}" width="${bbxobj.width()}" height="${bbxobj.height()}" style="fill:yellow;fill-opacity:0.5" />\n\t\t`;
+          bbx = this.bbx.match(/(-|\d|\.|\s)+/)[0].trim();
+        }
+        else {
+          paths = "";
+          bbx = bbxobj.toString();
+        }
+        paths += this.arr2str(a,"\n","<path>")
         return "<svg xmlns=\"http://www.w3.org/2000/svg\" preserveAspectRatio=\"xMidYMid meet\" viewBox=\""+bbx+"\">\n"+paths+"\n</svg>";
       } else {
         return this.arr2str(a,"","d=",true);
       }
     },// end arr2svg
+    arr2tikz: function(a) {
+      var realbbxobj = SVGPath(this.arr2str(a,"","abs")).round(this.precision).toBox();
+      var bbxstr = `\\fill[yellow] (${realbbxobj.minX},${realbbxobj.minY}) rectangle (${realbbxobj.maxX},${realbbxobj.maxY});% real bounding box\n\t\t`
+      var bbxreqstr = (this.bbx+" ").match(/(-|\d|\.|\s)+/)[0].trim();
+      if (bbxreqstr){
+        var bbxreqarr = bbxreqstr.split(/\s+/);
+        bbxstr = `\\clip (${bbxreqarr[0]},${bbxreqarr[1]}) rectangle +(${bbxreqarr[2]},${bbxreqarr[3]});% requested bounding box\n\t\t`
+                + bbxstr
+
+      }
+      var paths = this.arr2str(a,"\n\t\t","fill");
+      return ""
+            +"\\documentclass[tikz]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}[x=1pt,y=1pt,yscale=-1]\n\t\t"
+            + bbxstr
+            + paths
+            +"\n\t\\end{tikzpicture}\n\\end{document}";
+    },// end arr2tikz
     transformViewBox: function(svgseg, trans) {
       var vbattr = svgseg.match(/viewbox\s*=\s*"[^"]*"/ig);
       if ( vbattr ){
-        var vbarr = vbattr[0].match(/[\d.+-]+/g);
-        var vbpath = "M" + vbarr[0] + " " + vbarr[1] + "l" + vbarr[2] + " " + vbarr[3];
-        var bbx = SVGPath(vbpath).transform(trans).toBox().toString();
+        var bbx = (this.bbx+" ").match(/(-|\d|\.|\s)+/)[0].trim();
+        if (! bbx){
+          var vbarr = vbattr[0].match(/[\d.+-]+/g);
+          var vbpath = "M" + vbarr[0] + " " + vbarr[1] + "l" + vbarr[2] + " " + vbarr[3];
+          var bbx = SVGPath(vbpath).transform(trans).toBox().toString();
+        }
         svgseg = svgseg.replace(vbattr,"viewBox=\""+bbx+"\"");
       }
       return svgseg;
