@@ -275,11 +275,12 @@ Some notes
 ---
 
 - The library is located in the `lib` folder.
-- The browser version `svgpathy.js` is generated using [browserify](http://browserify.org/) by the command :
+- The browser version `svgpathy.js` is generated using [esbuild](https://github.com/evanw/esbuild) by the command :
 
     ```
-    browserify browserify_svgpath.js -o svgpathy.js
+    esbuild --outfile=svgpathy.js --bundle browserify_svgpath.js
     ```
+
 - In a browser you can use a CDN version :
 
     ```
