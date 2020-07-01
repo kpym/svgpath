@@ -73,8 +73,10 @@ var app = new Vue({
         case "svg":
           return this.arr2svg(this.outputArr);
         case "tikz-standalone":
+          bbxobj = SVGPath(this.arr2str(this.outputArr,"","abs")).toBox();
           return ""
-            +"\\documentclass[tikz,border=7pt]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}\n\t\t"
+            +"\\documentclass[tikz]{standalone}\n\\usetikzlibrary{svg.path}\n\\begin{document}\n\t\\begin{tikzpicture}[x=1pt,y=1pt,yscale=-1]\n\t\t"
+            +`\\clip (${bbxobj.minX},${bbxobj.minY}) rectangle (${bbxobj.maxX},${bbxobj.maxY});\n\t\t`
             +this.arr2str(this.outputArr,"\n\t\t","fill")
             +"\n\t\\end{tikzpicture}\n\\end{document}";
         case "pbbx":
