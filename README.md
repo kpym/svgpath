@@ -284,7 +284,7 @@ Some notes
 - In a browser you can use a CDN version :
 
     ```
-    <script src="https://cdn.rawgit.com/kpym/SVGPathy/master/lib/svgpathy.js" type="text/javascript" ></script>
+    <script src="https://cdn.jsdelivr.net/gh/kpym/SVGPathy@master/lib/svgpathy.min.js" type="text/javascript" ></script>
     ```
 
 ## TODO
