@@ -119,7 +119,6 @@ var app = new Vue({
       p.transform(trans);
 
       var ziplevel = !this.zipit ? "-" : (this.outputtype.startsWith("tikz") ? "+d": "+");
-      console.log("ziplevel: " + ziplevel);
 
       return p.round(this.precision).toString(ziplevel);
     }, // end transformSegment
